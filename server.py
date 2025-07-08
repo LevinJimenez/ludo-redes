@@ -323,7 +323,7 @@ class ServerGUI:
         self.text = tk.Text(self.root, width=70, height=20, state='disabled', font=('Consolas', 10))
         self.text.pack(padx=10, pady=10)
         self.root.protocol('WM_DELETE_WINDOW', self.on_close)
-        threading.Thread(target=self.root.mainloop, daemon=True).start()
+        # La línea que iniciaba el hilo ha sido eliminada.
 
     def add_entry(self, msg):
         self.text.config(state='normal')
