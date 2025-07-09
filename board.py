@@ -1,3 +1,6 @@
+# Contiene la clase LudoBoard, que se especializa en dibujar los elementos estáticos del tablero de juego usando la librería tkinter, 
+# como los cuadrados del camino, las zonas de inicio (casas) y las flechas de llegada a la meta.
+
 import tkinter as tk
 from random import randrange
 from tkinter import font

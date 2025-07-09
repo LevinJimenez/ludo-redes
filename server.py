@@ -1,3 +1,7 @@
+#Se encarga de toda la lógica principal: gestionar las cuentas de usuario (registro y login), crear y administrar las partidas, controlar los turnos, 
+# lanzar el dado, validar los movimientos de las fichas y mantener el estado del tablero sincronizado para todos los jugadores. También incluye una pequeña interfaz 
+# gráfica para ver los registros de conexión.
+
 import socket
 from _thread import *
 import sys

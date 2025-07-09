@@ -1,3 +1,7 @@
+#Almacena constantes y configuraciones usadas en todo el proyecto. Define los colores (verde, rojo, etc.), 
+# las dimensiones del tablero y, muy importante, la clase Path que calcula y guarda las coordenadas exactas por 
+# las que debe moverse cada ficha de cada color. Centralizar esto aquí hace que el código sea más limpio y fácil de mantener.
+
 class Color:
 
     GREEN = '#0CED2C'
@@ -23,7 +27,7 @@ class Board:
 
 class Text:
 
-    MADE_BY = 'Made By: Dhananjay Choudhary & Shivam Dhall'
+    MADE_BY = 'Jiménez, Sayago, Cova, Hurtado, Morales'
     HEADER =  'LUDO Multiplayer'
 
 

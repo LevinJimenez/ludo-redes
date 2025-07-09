@@ -1,3 +1,6 @@
+#Se encarga de todo lo visual: dibuja el tablero, las fichas y los botones. Se conecta al server.py para enviar las acciones del jugador
+# (como iniciar sesión, tirar el dado o mover una ficha) y recibe las actualizaciones del servidor para mostrar en pantalla cómo avanza el juego.
+
 import tkinter as tk
 import tkinter.messagebox
 from time import sleep
@@ -396,7 +399,7 @@ def startgame():
             colors[i][j].set_playername(turn[i])
 
     start_label = tk.Label(ludo.get_frame(), text='! START ! Let\'s Begin with {}'.format(turn[0]), font=('Arial', 20),
-                         width=30, height=3, borderwidth=3, relief=tk.SUNKEN)
+                        width=30, height=3, borderwidth=3, relief=tk.SUNKEN)
     start_label.place(x=100, y=100)
     root.destroy()
 
@@ -437,11 +440,11 @@ def create_enterpage():
     yellow_label.place(x=407, y=130)
 
 def on_closing():
-    if tkinter.messagebox.askokcancel("Quit", "Do you want to quit the game? If you want to continue the game, press Enter in the Nickname window"):
+    if tkinter.messagebox.askokcancel("Quit", "seguro de que quieres cerrar el juego?"):
         root.destroy()
 
 def on_closingroot():
-    if tkinter.messagebox.askokcancel("Quit", "Do you want to quit the game?"):
+    if tkinter.messagebox.askokcancel("Quit", "seguro de que quieres cerrar el juego?"):
         root.destroy()
 
 # Variables globales
@@ -530,9 +533,6 @@ def create_control_panel():
     
     start_button = tk.Button(control_frame, text='Iniciar partida', command=start_game, width=15)
     start_button.pack(pady=2)
-    
-    status_button = tk.Button(control_frame, text='Consultar estado', command=get_game_state, width=15)
-    status_button.pack(pady=2)
     
     # Área de información
     info_frame = tk.Frame(ludo.get_frame())
