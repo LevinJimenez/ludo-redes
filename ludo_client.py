@@ -243,20 +243,17 @@ class Dice:
         if client_socket is None:
             tkinter.messagebox.showerror('Error', 'No hay conexión con el servidor.')
             return
+
         def task():
-            if client_socket is None:
-                tkinter.messagebox.showerror('Error', 'No hay conexión con el servidor.')
-                return
+            # 1. Enviar la orden de tirar el dado
             msg = 'ROLL_DICE'
             client_socket.send(msg.encode('utf-8'))
-            resp = client_socket.recv(256).decode('utf-8')
-            if resp.startswith('OK:'):
-                dice_value = int(resp[3:])
-                cls.roll = [dice_value]
-                root.after(0, lambda: cls.update_dice_display(dice_value))
-                root.after(0, lambda: get_game_state(force_update=True))
-            else:
-                root.after(0, lambda: tkinter.messagebox.showerror('Error', resp[6:] if resp.startswith('ERROR:') else resp))
+            
+            # 2. Pedir la actualización del estado del juego
+            # El servidor responderá con el estado completo, que incluye el nuevo valor del dado.
+            # La función get_game_state ya se encarga de recibir y procesar la respuesta.
+            get_game_state(force_update=True)
+
         threading.Thread(target=task, daemon=True).start()
 
     @classmethod
@@ -456,7 +453,7 @@ current_turn = None
 
 # Inicializar conexión al servidor
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-remote_ip = '127.0.0.1'
+remote_ip = '192.168.1.160'
 remote_port = 10319
 client_socket.connect((remote_ip, remote_port))
 
@@ -488,21 +485,6 @@ for i in range(4):
 # Botón ROLL modificado para usar red
 button = tk.Button(ludo.get_frame(), text='ROLL', command=Dice.start, width=20, height=2)
 button.place(x=210, y=470)
-
-# Mensaje de bienvenida
-welcome_msg = ''' Welcome Players let's get into the game of LUDO :-) \n
-        Rules of the game:
-- The players roll a six-sided die in turns and can advance any of their coins on the track by the number of steps as displayed by the dice.\n
-- Once you get a six in a dice throw, you have to roll the dice again, and must use all scores while making the final selection of what coins to move where.\n
-- If you get a six three times in a row, your throws are reset and you will lose that chance.\n
-- The coin can advance in the home run only if it reaches exactly inside the home pocket, or moves closer to it through the home run. 
-For example, if the coin is four squares away from the home pocket and the player rolls a five, he must apply the throw to some other coin. \
-However, if you roll a two, you can advance the coin by two squares and then it rests there until the next move.\n 
-    
-    Enjoy the game and have fun.
-        # Best of luck #
-'''
-tkinter.messagebox.showinfo('Welcome', welcome_msg)
 
 def start_gui(username):
     global current_user, user_color
@@ -569,14 +551,18 @@ def create_control_panel():
     roll_button.config(state='disabled')
 
 def update_buttons_state():
-    # Solo habilitar ROLL si es el turno del usuario
-    if current_turn is not None and user_color is not None and current_user is not None:
-        if players and players[current_turn] == current_user:
-            roll_button.config(state='normal')
+    # Solo habilitar y colorear ROLL si es el turno del usuario
+    if current_turn is not None and user_color is not None and current_user is not None and players:
+        if players[current_turn] == current_user:
+            # Es el turno del jugador
+            roll_button.config(state='normal', bg='#90EE90')  # Habilitado y color verde suave
         else:
-            roll_button.config(state='disabled')
+            # No es el turno del jugador
+            roll_button.config(state='disabled', bg='#F0F0F0') # Deshabilitado y color gris (default)
     else:
-        roll_button.config(state='disabled')
+        # El juego no ha comenzado o los datos no están listos
+        roll_button.config(state='disabled', bg='#F0F0F0') # Deshabilitado y color gris (default)
+
 
 def join_game():
     def task():
@@ -634,10 +620,16 @@ def update_status_display(state):
     
     game_state = state.get('state', 'unknown')
     status_text = f'Estado: {game_state}'
+    
     if game_state == 'running':
-        status_text += f' - Turno: {players[current_turn] if current_turn is not None and current_turn < len(players) else current_turn}'
-        if state.get('dice'):
-            status_text += f' - Dado: {state.get('dice')}'
+        status_text += f' - Turno: {players[current_turn] if current_turn is not None and current_turn < len(players) else "N/A"}'
+        
+        dice_val = state.get('dice')
+        if dice_val:
+            status_text += f' - Dado: {dice_val}'
+            Dice.roll = [dice_val]  # <-- LÍNEA AÑADIDA: Actualiza la variable del dado.
+            Dice.update_dice_display(dice_val) # <-- LÍNEA AÑADIDA: Actualiza la imagen del dado.
+
     status_label.config(text=status_text)
     update_buttons_state()
 
